@@ -1,101 +1,64 @@
 import { useEffect, useRef } from 'react'
 
-export default function useTimeUpSound() {
-  const audioContextRef = useRef(null)
+const ALERT_DURATION = 2500
+const ALERT_VOLUME = 0.95
 
-  const getContext = () => {
-    if (!audioContextRef.current) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext
-      audioContextRef.current = new AudioContext()
+export default function useTimeUpSound() {
+  const audioRef = useRef(null)
+  const stopTimerRef = useRef(null)
+
+  const getAudio = () => {
+    if (!audioRef.current) {
+      const audio = new Audio('/audio/classic-phone-bell.mp3')
+      audio.preload = 'auto'
+      audio.volume = ALERT_VOLUME
+      audioRef.current = audio
     }
-    return audioContextRef.current
+
+    return audioRef.current
+  }
+
+  const stopAlert = () => {
+    if (stopTimerRef.current) {
+      window.clearTimeout(stopTimerRef.current)
+      stopTimerRef.current = null
+    }
+
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+    }
   }
 
   const unlock = async () => {
-    const context = getContext()
-    if (context.state === 'suspended') await context.resume()
+    const audio = getAudio()
+
+    try {
+      audio.muted = true
+      await audio.play()
+      audio.pause()
+      audio.currentTime = 0
+      audio.muted = false
+    } catch {
+      audio.muted = false
+    }
   }
 
   const playAlert = async () => {
-    const context = getContext()
-    if (context.state === 'suspended') await context.resume()
+    const audio = getAudio()
+    stopAlert()
+    audio.muted = false
+    audio.volume = ALERT_VOLUME
 
-    const masterGain = context.createGain()
-    const compressor = context.createDynamicsCompressor()
-    const now = context.currentTime
-
-    masterGain.gain.setValueAtTime(0.72, now)
-    compressor.threshold.setValueAtTime(-10, now)
-    compressor.knee.setValueAtTime(10, now)
-    compressor.ratio.setValueAtTime(6, now)
-    masterGain.connect(compressor)
-    compressor.connect(context.destination)
-
-    const alarmPartials = [
-      { frequency: 780, volume: 0.42, decay: 0.19 },
-      { frequency: 1187, volume: 0.24, decay: 0.16 },
-      { frequency: 2385, volume: 0.13, decay: 0.13 },
-      { frequency: 3190, volume: 0.07, decay: 0.1 },
-    ]
-
-    ;[0, 0.24, 0.48].forEach((delay, strikeIndex) => {
-      const startAt = now + delay
-
-      alarmPartials.forEach((partial, partialIndex) => {
-        const oscillator = context.createOscillator()
-        const gain = context.createGain()
-        const duration = partial.decay
-
-        oscillator.type = 'sine'
-        oscillator.frequency.setValueAtTime(
-          partial.frequency + (strikeIndex % 2 === 0 ? 9 : -11),
-          startAt,
-        )
-        oscillator.detune.setValueAtTime(partialIndex % 2 === 0 ? -5 : 5, startAt)
-        gain.gain.setValueAtTime(0.0001, startAt)
-        gain.gain.exponentialRampToValueAtTime(partial.volume, startAt + 0.003)
-        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration)
-
-        oscillator.connect(gain)
-        gain.connect(masterGain)
-        oscillator.start(startAt)
-        oscillator.stop(startAt + duration + 0.04)
-      })
-
-      const noiseLength = Math.floor(context.sampleRate * 0.035)
-      const noiseBuffer = context.createBuffer(1, noiseLength, context.sampleRate)
-      const noiseData = noiseBuffer.getChannelData(0)
-      const noiseSource = context.createBufferSource()
-      const noiseFilter = context.createBiquadFilter()
-      const noiseGain = context.createGain()
-
-      for (let sample = 0; sample < noiseLength; sample += 1) {
-        noiseData[sample] = (Math.random() * 2 - 1) * (1 - sample / noiseLength)
-      }
-
-      noiseSource.buffer = noiseBuffer
-      noiseFilter.type = 'bandpass'
-      noiseFilter.frequency.setValueAtTime(2700, startAt)
-      noiseFilter.Q.setValueAtTime(0.9, startAt)
-      noiseGain.gain.setValueAtTime(0.2, startAt)
-      noiseGain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.04)
-      noiseSource.connect(noiseFilter)
-      noiseFilter.connect(noiseGain)
-      noiseGain.connect(masterGain)
-      noiseSource.start(startAt)
-    })
-
-    window.setTimeout(() => {
-      masterGain.disconnect()
-      compressor.disconnect()
-    }, 950)
+    try {
+      await audio.play()
+      stopTimerRef.current = window.setTimeout(stopAlert, ALERT_DURATION)
+    } catch {
+      // Trình duyệt có thể chặn âm thanh nếu người dùng chưa tương tác với trang.
+    }
   }
 
-  useEffect(() => {
-    return () => {
-      audioContextRef.current?.close()
-    }
-  }, [])
+  useEffect(() => stopAlert, [])
 
   return { unlock, playAlert }
 }
