@@ -24,34 +24,34 @@ export default function useTimeUpSound() {
     const compressor = context.createDynamicsCompressor()
     const now = context.currentTime
 
-    masterGain.gain.setValueAtTime(0.76, now)
+    masterGain.gain.setValueAtTime(0.78, now)
     compressor.threshold.setValueAtTime(-10, now)
     compressor.knee.setValueAtTime(10, now)
     compressor.ratio.setValueAtTime(6, now)
     masterGain.connect(compressor)
     compressor.connect(context.destination)
 
-    const bellPartials = [
-      { ratio: 1, volume: 0.58, decay: 1.65 },
-      { ratio: 2.01, volume: 0.3, decay: 1.25 },
-      { ratio: 2.93, volume: 0.17, decay: 0.95 },
-      { ratio: 4.16, volume: 0.09, decay: 0.68 },
+    const alarmPartials = [
+      { ratio: 1, volume: 0.48 },
+      { ratio: 1.48, volume: 0.25 },
+      { ratio: 2.16, volume: 0.12 },
     ]
 
-    ;[0, 0.72].forEach((delay, strikeIndex) => {
+    ;[0, 0.17, 0.34].forEach((delay, strikeIndex) => {
       const startAt = now + delay
-      const fundamental = strikeIndex === 0 ? 720 : 660
+      const fundamental = strikeIndex % 2 === 0 ? 1050 : 1220
 
-      bellPartials.forEach((partial, partialIndex) => {
+      alarmPartials.forEach((partial, partialIndex) => {
         const oscillator = context.createOscillator()
         const gain = context.createGain()
-        const duration = partial.decay + (strikeIndex * 0.08)
+        const duration = 0.14
 
-        oscillator.type = 'sine'
+        oscillator.type = partialIndex === 0 ? 'triangle' : 'sine'
         oscillator.frequency.setValueAtTime(fundamental * partial.ratio, startAt)
         oscillator.detune.setValueAtTime(partialIndex % 2 === 0 ? -3 : 3, startAt)
         gain.gain.setValueAtTime(0.0001, startAt)
-        gain.gain.exponentialRampToValueAtTime(partial.volume, startAt + 0.008)
+        gain.gain.exponentialRampToValueAtTime(partial.volume, startAt + 0.006)
+        gain.gain.setValueAtTime(partial.volume * 0.82, startAt + 0.055)
         gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration)
 
         oscillator.connect(gain)
@@ -64,7 +64,7 @@ export default function useTimeUpSound() {
     window.setTimeout(() => {
       masterGain.disconnect()
       compressor.disconnect()
-    }, 2800)
+    }, 850)
   }
 
   useEffect(() => {
