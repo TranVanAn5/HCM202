@@ -3,9 +3,12 @@ import {
   Check,
   ChevronRight,
   Flag,
+  HelpCircle,
+  ListFilter,
   Pause,
   Play,
   RotateCcw,
+  Users,
   Volume2,
   VolumeX,
 } from 'lucide-react'
@@ -15,7 +18,29 @@ import TeamScoreboard from '../components/TeamScoreboard'
 import { letters } from '../data/gameData'
 import useTensionMusic from '../hooks/useTensionMusic'
 import './GamePage.css'
+import './HelpPanel.css'
 import './TimerControls.css'
+
+const aidOptions = [
+  {
+    id: 'file',
+    label: 'Mở hồ sơ',
+    description: 'Hiện dữ kiện gợi ý',
+    icon: BookOpen,
+  },
+  {
+    id: 'historian',
+    label: 'Hỏi nhà sử học',
+    description: 'Có thêm 15 giây hỏi BTC',
+    icon: Users,
+  },
+  {
+    id: 'eliminate',
+    label: 'Loại trừ',
+    description: 'Ẩn hai phương án sai',
+    icon: ListFilter,
+  },
+]
 
 function RoundIntro({ round, roundIndex, onStart }) {
   return (
@@ -53,6 +78,12 @@ export default function GamePage({
   const [timeLeft, setTimeLeft] = useState(10)
   const [timerStatus, setTimerStatus] = useState('idle')
   const [musicEnabled, setMusicEnabled] = useState(true)
+  const [selectedAidTeam, setSelectedAidTeam] = useState(0)
+  const [usedAids, setUsedAids] = useState(() =>
+    Array.from({ length: scoreboardProps.teams.length }, () => []),
+  )
+  const [eliminatedOptions, setEliminatedOptions] = useState([])
+  const [aidMessage, setAidMessage] = useState(null)
   const music = useTensionMusic()
   const round = gameRounds[roundIndex]
   const question = round.questions[questionIndex]
@@ -68,9 +99,17 @@ export default function GamePage({
     if (!showIntro) {
       setTimeLeft(10)
       setTimerStatus('idle')
+      setEliminatedOptions([])
+      setAidMessage(null)
       music.stop()
     }
   }, [questionIndex])
+
+  useEffect(() => {
+    if (selectedAidTeam >= scoreboardProps.teamCount) {
+      setSelectedAidTeam(Math.max(0, scoreboardProps.teamCount - 1))
+    }
+  }, [selectedAidTeam, scoreboardProps.teamCount])
 
   useEffect(() => {
     if (
@@ -132,6 +171,49 @@ export default function GamePage({
     })
   }
 
+  const useAid = (aidId) => {
+    const teamAids = usedAids[selectedAidTeam] || []
+    if (isRevealed || teamAids.length >= 2 || teamAids.includes(aidId)) return
+
+    setUsedAids((current) =>
+      current.map((items, index) =>
+        index === selectedAidTeam ? [...items, aidId] : items,
+      ),
+    )
+
+    const teamName = scoreboardProps.teams[selectedAidTeam]
+
+    if (aidId === 'file') {
+      setAidMessage({
+        title: `Hồ sơ dành cho ${teamName}`,
+        text: question.note,
+      })
+    }
+
+    if (aidId === 'historian') {
+      setTimeLeft(15)
+      setTimerStatus('running')
+      music.stop()
+      setAidMessage({
+        title: `${teamName} đang hỏi nhà sử học`,
+        text: 'Đội có 15 giây để trao đổi trực tiếp với ban tổ chức.',
+      })
+    }
+
+    if (aidId === 'eliminate') {
+      const wrongOptions = question.o
+        .map((_, index) => index)
+        .filter((index) => index !== question.a)
+        .slice(0, 2)
+      setEliminatedOptions(wrongOptions)
+      onChoose(null)
+      setAidMessage({
+        title: `${teamName} đã dùng quyền loại trừ`,
+        text: 'Hai phương án sai đã được khóa trên màn hình.',
+      })
+    }
+  }
+
   const buttonClass = (index) => {
     const selected = answerIndex === index ? 'picked ' : ''
     const correct = isRevealed && index === question.a ? 'correct ' : ''
@@ -182,6 +264,54 @@ export default function GamePage({
               ))}
             </div>
 
+            <section className="help-panel">
+              <div className="help-panel-heading">
+                <span><HelpCircle size={17} /> QUYỀN TRỢ GIÚP</span>
+                <label>
+                  Đội sử dụng
+                  <select
+                    value={selectedAidTeam}
+                    onChange={(event) => setSelectedAidTeam(Number(event.target.value))}
+                  >
+                    {scoreboardProps.teams
+                      .slice(0, scoreboardProps.teamCount)
+                      .map((team, index) => (
+                        <option value={index} key={index}>{team}</option>
+                      ))}
+                  </select>
+                </label>
+                <b>{2 - (usedAids[selectedAidTeam]?.length || 0)} lượt còn lại</b>
+              </div>
+
+              <div className="help-actions">
+                {aidOptions.map((aid) => {
+                  const AidIcon = aid.icon
+                  const teamAids = usedAids[selectedAidTeam] || []
+                  const isUsed = teamAids.includes(aid.id)
+                  const hasNoTurns = teamAids.length >= 2
+
+                  return (
+                    <button
+                      className={isUsed ? 'used' : ''}
+                      disabled={isRevealed || isUsed || hasNoTurns}
+                      key={aid.id}
+                      onClick={() => useAid(aid.id)}
+                    >
+                      <AidIcon size={16} />
+                      <span><strong>{aid.label}</strong><small>{isUsed ? 'Đã sử dụng' : aid.description}</small></span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {aidMessage && (
+                <div className="aid-message">
+                  <b>{aidMessage.title}</b>
+                  <p>{aidMessage.text}</p>
+                </div>
+              )}
+            </section>
+
             <article className={'question-panel ' + (timeLeft === 0 ? 'time-ended' : '')}>
               {timeLeft === 0 && <div className="time-up-banner">HẾT GIỜ — CÁC ĐỘI GIƠ ĐÁP ÁN</div>}
               <p className="question-count">
@@ -192,13 +322,13 @@ export default function GamePage({
               <div className="answers">
                 {question.o.map((option, index) => (
                   <button
-                    disabled={isRevealed}
+                    disabled={isRevealed || eliminatedOptions.includes(index)}
                     onClick={() => onChoose(index)}
                     key={option}
-                    className={buttonClass(index)}
+                    className={buttonClass(index) + (eliminatedOptions.includes(index) ? ' eliminated' : '')}
                   >
                     <b>{letters[index]}</b>
-                    <span>{option}</span>
+                    <span>{eliminatedOptions.includes(index) ? 'Phương án đã bị loại' : option}</span>
                     {isRevealed && index === question.a && <Check size={19} />}
                   </button>
                 ))}
