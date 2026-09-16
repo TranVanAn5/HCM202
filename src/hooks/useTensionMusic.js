@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 const NOTES = [110, 130.81, 146.83, 164.81, 146.83, 130.81]
+const MASTER_VOLUME = 0.8
 
 export default function useTensionMusic() {
   const audioContextRef = useRef(null)
@@ -21,7 +22,7 @@ export default function useTensionMusic() {
     const context = getContext()
     if (!masterGainRef.current) {
       const masterGain = context.createGain()
-      masterGain.gain.setValueAtTime(0.32, context.currentTime)
+      masterGain.gain.setValueAtTime(MASTER_VOLUME, context.currentTime)
       masterGain.connect(context.destination)
       masterGainRef.current = masterGain
     }
@@ -37,7 +38,7 @@ export default function useTensionMusic() {
     oscillator.type = 'triangle'
     oscillator.frequency.setValueAtTime(NOTES[stepRef.current % NOTES.length], now)
     gain.gain.setValueAtTime(0.0001, now)
-    gain.gain.exponentialRampToValueAtTime(0.16, now + 0.025)
+    gain.gain.exponentialRampToValueAtTime(0.2, now + 0.025)
     gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28)
 
     oscillator.connect(gain)
@@ -56,7 +57,7 @@ export default function useTensionMusic() {
     const droneGain = context.createGain()
     drone.type = 'sine'
     drone.frequency.setValueAtTime(55, context.currentTime)
-    droneGain.gain.setValueAtTime(0.08, context.currentTime)
+    droneGain.gain.setValueAtTime(0.11, context.currentTime)
     drone.connect(droneGain)
     droneGain.connect(getMasterGain())
     drone.start()
