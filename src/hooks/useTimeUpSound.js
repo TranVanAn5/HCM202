@@ -24,35 +24,47 @@ export default function useTimeUpSound() {
     const compressor = context.createDynamicsCompressor()
     const now = context.currentTime
 
-    masterGain.gain.setValueAtTime(0.85, now)
-    compressor.threshold.setValueAtTime(-12, now)
-    compressor.knee.setValueAtTime(8, now)
-    compressor.ratio.setValueAtTime(8, now)
+    masterGain.gain.setValueAtTime(0.76, now)
+    compressor.threshold.setValueAtTime(-10, now)
+    compressor.knee.setValueAtTime(10, now)
+    compressor.ratio.setValueAtTime(6, now)
     masterGain.connect(compressor)
     compressor.connect(context.destination)
 
-    ;[0, 0.28, 0.56].forEach((delay, index) => {
-      const oscillator = context.createOscillator()
-      const gain = context.createGain()
+    const bellPartials = [
+      { ratio: 1, volume: 0.58, decay: 1.65 },
+      { ratio: 2.01, volume: 0.3, decay: 1.25 },
+      { ratio: 2.93, volume: 0.17, decay: 0.95 },
+      { ratio: 4.16, volume: 0.09, decay: 0.68 },
+    ]
+
+    ;[0, 0.72].forEach((delay, strikeIndex) => {
       const startAt = now + delay
+      const fundamental = strikeIndex === 0 ? 720 : 660
 
-      oscillator.type = 'square'
-      oscillator.frequency.setValueAtTime(index === 1 ? 740 : 920, startAt)
-      gain.gain.setValueAtTime(0.0001, startAt)
-      gain.gain.exponentialRampToValueAtTime(0.48, startAt + 0.015)
-      gain.gain.setValueAtTime(0.48, startAt + 0.15)
-      gain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.24)
+      bellPartials.forEach((partial, partialIndex) => {
+        const oscillator = context.createOscillator()
+        const gain = context.createGain()
+        const duration = partial.decay + (strikeIndex * 0.08)
 
-      oscillator.connect(gain)
-      gain.connect(masterGain)
-      oscillator.start(startAt)
-      oscillator.stop(startAt + 0.25)
+        oscillator.type = 'sine'
+        oscillator.frequency.setValueAtTime(fundamental * partial.ratio, startAt)
+        oscillator.detune.setValueAtTime(partialIndex % 2 === 0 ? -3 : 3, startAt)
+        gain.gain.setValueAtTime(0.0001, startAt)
+        gain.gain.exponentialRampToValueAtTime(partial.volume, startAt + 0.008)
+        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration)
+
+        oscillator.connect(gain)
+        gain.connect(masterGain)
+        oscillator.start(startAt)
+        oscillator.stop(startAt + duration + 0.04)
+      })
     })
 
     window.setTimeout(() => {
       masterGain.disconnect()
       compressor.disconnect()
-    }, 1100)
+    }, 2800)
   }
 
   useEffect(() => {
