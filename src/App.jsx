@@ -17,8 +17,15 @@ export default function App() {
   const [answerIndex, setAnswerIndex] = useState(null)
   const [isRevealed, setIsRevealed] = useState(false)
   const [gameRounds, setGameRounds] = useState(createGameRounds)
-  const [scores, setScores] = useState([0, 0, 0, 0, 0])
-  const [teams, setTeams] = useState(['Sao Vàng', 'Việt Minh', 'Độc Lập', 'Hòa Bình', 'Đoàn Kết'])
+  const [scores, setScores] = useState([0, 0, 0, 0, 0, 0])
+  const [teams, setTeams] = useState([
+    'Sao Vàng',
+    'Việt Minh',
+    'Độc Lập',
+    'Hòa Bình',
+    'Đoàn Kết',
+    'Tiên Phong',
+  ])
   const [teamCount, setTeamCount] = useState(4)
   const [timeline, setTimeline] = useState(shuffle(timelineEvents))
   const [timelineResult, setTimelineResult] = useState(null)
@@ -26,7 +33,7 @@ export default function App() {
   const startGame = () => {
     setRoundIndex(0); setQuestionIndex(0); setAnswerIndex(null); setIsRevealed(false)
     setGameRounds(createGameRounds())
-    setScores([0, 0, 0, 0, 0]); setTimeline(shuffle(timelineEvents)); setTimelineResult(null)
+    setScores([0, 0, 0, 0, 0, 0]); setTimeline(shuffle(timelineEvents)); setTimelineResult(null)
     navigateTo('game')
   }
 

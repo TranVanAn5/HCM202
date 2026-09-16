@@ -14,7 +14,7 @@ export default function HomePage({ onStart, onRules }) {
           <button className="secondary" onClick={onRules}>Xem luật chơi <ArrowRight size={17} /></button>
         </div>
         <div className="hero-meta">
-          <span><Users size={16} /> 3–5 đội cùng chơi</span><span><Clock3 size={16} /> 15–20 phút</span><span><Trophy size={16} /> 5 mảnh hồ sơ</span>
+          <span><Users size={16} /> 3–6 đội cùng chơi</span><span><Clock3 size={16} /> 15–20 phút</span><span><Trophy size={16} /> 5 mảnh hồ sơ</span>
         </div>
       </section>
       <section className="case-preview">

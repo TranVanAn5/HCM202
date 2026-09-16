@@ -1,7 +1,7 @@
 import { HelpCircle, Play } from 'lucide-react'
 
 const rules = [
-  ['01', 'Lập đội điều tra', 'Chia lớp thành 3–5 đội. Mỗi đội chọn tên, đội trưởng và nhận các bảng A, B, C, D.'],
+  ['01', 'Lập đội điều tra', 'Chia lớp thành 3–6 đội. Mỗi đội chọn tên, đội trưởng và nhận các bảng A, B, C, D.'],
   ['02', 'Giải mã hồ sơ', 'MC đọc câu hỏi, các đội có 10 giây thảo luận. Khi có hiệu lệnh, tất cả đội cùng giơ đáp án.'],
   ['03', 'Tính điểm', 'Đúng được 10 điểm. Đội trả lời đúng nhanh nhất được cộng thêm 5 điểm. Sai không bị trừ điểm.'],
   ['04', 'Quyền trợ giúp', 'Mỗi đội dùng tối đa 2 quyền khác nhau trong cả game: Mở hồ sơ lịch sử, Hỏi nhà sử học hoặc Loại trừ.'],
