@@ -8,7 +8,6 @@ import {
   Pause,
   Play,
   RotateCcw,
-  Users,
   Volume2,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -26,12 +25,6 @@ const aidOptions = [
     label: 'Mở hồ sơ',
     description: 'Hiện dữ kiện gợi ý',
     icon: BookOpen,
-  },
-  {
-    id: 'historian',
-    label: 'Hỏi nhà sử học',
-    description: 'Có thêm 15 giây hỏi BTC',
-    icon: Users,
   },
   {
     id: 'eliminate',
@@ -172,16 +165,6 @@ export default function GamePage({
       setAidMessage({
         title: `Hồ sơ dành cho ${teamName}`,
         text: question.note,
-      })
-    }
-
-    if (aidId === 'historian') {
-      setTimeLeft(15)
-      setTimerStatus('running')
-      timeUpSound.unlock()
-      setAidMessage({
-        title: `${teamName} đang hỏi nhà sử học`,
-        text: 'Đội có 15 giây để trao đổi trực tiếp với ban tổ chức.',
       })
     }
 
