@@ -1,0 +1,141 @@
+.final-game-layout {
+  align-items: start;
+}
+
+.final-game-layout:has(.final-summary-panel) {
+  grid-template-columns: 285px minmax(0, 1fr) 300px;
+}
+
+.final-score-page {
+  width: 100%;
+  min-width: 0;
+  padding: 0 0 40px;
+}
+
+.final-game-layout .scoreboard {
+  position: sticky;
+  top: 104px;
+}
+
+.final-summary-panel {
+  position: sticky;
+  top: 104px;
+  margin-top: 0;
+  padding: 24px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  background: rgba(6, 19, 23, 0.82);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(14px);
+}
+
+.final-summary-panel h2 {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 0;
+  font-size: 25px;
+}
+
+.final-summary-panel h2 em {
+  font-size: 13px;
+}
+
+.final-game-layout .team-score > div {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.final-game-layout .team-score > div button {
+  padding-inline: 5px;
+}
+
+.winner .final-rankings {
+  width: 100%;
+  margin: 22px auto 20px;
+  display: grid;
+  gap: 9px;
+}
+
+.winner .final-rankings article {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 13px 18px;
+  border: 1px solid rgba(151, 105, 45, 0.2);
+  border-radius: 13px;
+  background: rgba(255, 250, 235, 0.78);
+  color: #462114;
+  text-align: left;
+}
+
+.winner .final-rankings article strong {
+  grid-column: 2;
+}
+
+.winner .final-rankings article.is-leading {
+  border-color: rgba(213, 154, 34, 0.65);
+  background: linear-gradient(100deg, rgba(255, 225, 126, 0.5), rgba(255, 250, 235, 0.9));
+  box-shadow: 0 10px 26px rgba(129, 76, 18, 0.12);
+}
+
+.winner .final-rankings article b {
+  color: #a5231b;
+}
+
+.winner .final-rankings article span {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.winner .final-rankings article strong {
+  color: #a5231b;
+}
+
+.restart-final-button {
+  margin-inline: auto;
+}
+
+@media (max-width: 1250px) {
+  .final-game-layout:has(.final-summary-panel) {
+    grid-template-columns: 250px minmax(0, 1fr) 260px;
+    gap: 18px;
+    padding-inline: 18px;
+  }
+
+  .final-summary-panel {
+    padding-inline: 14px;
+  }
+}
+
+@media (max-width: 850px) {
+  .final-game-layout:has(.final-summary-panel) {
+    grid-template-columns: 1fr;
+  }
+
+  .final-game-layout .scoreboard {
+    position: static;
+  }
+
+  .final-summary-panel {
+    position: static;
+    order: 2;
+  }
+
+  .final-game-layout:has(.final-summary-panel) .scoreboard {
+    order: 3;
+  }
+}
+
+@media (max-width: 520px) {
+  .winner .final-rankings article {
+    grid-template-columns: 36px minmax(0, 1fr);
+  }
+
+  .winner .final-rankings article strong {
+    grid-column: 2;
+  }
+}
