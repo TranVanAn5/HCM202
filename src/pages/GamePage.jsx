@@ -10,13 +10,12 @@ import {
   RotateCcw,
   Users,
   Volume2,
-  VolumeX,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import CountdownTimer from '../components/CountdownTimer'
 import TeamScoreboard from '../components/TeamScoreboard'
 import { letters } from '../data/gameData'
-import useTensionMusic from '../hooks/useTensionMusic'
+import useTimeUpSound from '../hooks/useTimeUpSound'
 import './GamePage.css'
 import './HelpPanel.css'
 import './TimerControls.css'
@@ -77,14 +76,13 @@ export default function GamePage({
   const [showIntro, setShowIntro] = useState(true)
   const [timeLeft, setTimeLeft] = useState(10)
   const [timerStatus, setTimerStatus] = useState('idle')
-  const [musicEnabled, setMusicEnabled] = useState(true)
   const [selectedAidTeam, setSelectedAidTeam] = useState(0)
   const [usedAids, setUsedAids] = useState(() =>
     Array.from({ length: scoreboardProps.teams.length }, () => []),
   )
   const [eliminatedOptions, setEliminatedOptions] = useState([])
   const [aidMessage, setAidMessage] = useState(null)
-  const music = useTensionMusic()
+  const timeUpSound = useTimeUpSound()
   const round = gameRounds[roundIndex]
   const question = round.questions[questionIndex]
 
@@ -92,7 +90,6 @@ export default function GamePage({
     setShowIntro(true)
     setTimeLeft(10)
     setTimerStatus('idle')
-    music.stop()
   }, [roundIndex])
 
   useEffect(() => {
@@ -101,7 +98,6 @@ export default function GamePage({
       setTimerStatus('idle')
       setEliminatedOptions([])
       setAidMessage(null)
-      music.stop()
     }
   }, [questionIndex])
 
@@ -124,7 +120,7 @@ export default function GamePage({
       setTimeLeft((current) => {
         if (current <= 1) {
           setTimerStatus('expired')
-          music.stop()
+          timeUpSound.playAlert()
           return 0
         }
         return current - 1
@@ -136,7 +132,6 @@ export default function GamePage({
   useEffect(() => {
     if (isRevealed) {
       setTimerStatus((current) => current === 'expired' ? current : 'paused')
-      music.stop()
     }
   }, [isRevealed])
 
@@ -146,29 +141,19 @@ export default function GamePage({
     setShowIntro(false)
   }
 
-  const startTimer = () => {
+  const startTimer = async () => {
+    await timeUpSound.unlock()
     if (timeLeft === 0) setTimeLeft(10)
     setTimerStatus('running')
-    if (musicEnabled) music.start()
   }
 
   const pauseTimer = () => {
     setTimerStatus('paused')
-    music.stop()
   }
 
   const resetTimer = () => {
     setTimeLeft(10)
     setTimerStatus('idle')
-    music.stop()
-  }
-
-  const toggleMusic = () => {
-    setMusicEnabled((enabled) => {
-      if (enabled) music.stop()
-      else if (timerStatus === 'running') music.start()
-      return !enabled
-    })
   }
 
   const useAid = (aidId) => {
@@ -193,7 +178,7 @@ export default function GamePage({
     if (aidId === 'historian') {
       setTimeLeft(15)
       setTimerStatus('running')
-      music.stop()
+      timeUpSound.unlock()
       setAidMessage({
         title: `${teamName} đang hỏi nhà sử học`,
         text: 'Đội có 15 giây để trao đổi trực tiếp với ban tổ chức.',
@@ -249,11 +234,7 @@ export default function GamePage({
                     </button>
                   )}
                   <button onClick={resetTimer} disabled={isRevealed}><RotateCcw size={13} /> Đặt lại</button>
-                  <button onClick={music.preview}><Volume2 size={13} /> Thử nhạc</button>
-                  <button onClick={toggleMusic}>
-                    {musicEnabled ? <Volume2 size={13} /> : <VolumeX size={13} />}
-                    {musicEnabled ? 'Nhạc bật' : 'Nhạc tắt'}
-                  </button>
+                  <button onClick={timeUpSound.playAlert}><Volume2 size={13} /> Thử âm báo</button>
                 </div>
               </div>
             </div>

@@ -6,13 +6,12 @@ import {
   Eye,
   Trophy,
   Volume2,
-  VolumeX,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import CountdownTimer from '../components/CountdownTimer'
 import TeamScoreboard from '../components/TeamScoreboard'
 import { timelineEvents } from '../data/gameData'
-import useTensionMusic from '../hooks/useTensionMusic'
+import useTimeUpSound from '../hooks/useTimeUpSound'
 import './GamePage.css'
 import './FinalPage.css'
 import './FinalPresentation.css'
@@ -34,8 +33,7 @@ export default function FinalPage({
   const [showIntro, setShowIntro] = useState(true)
   const [timeLeft, setTimeLeft] = useState(30)
   const [timerStatus, setTimerStatus] = useState('idle')
-  const [musicEnabled, setMusicEnabled] = useState(true)
-  const music = useTensionMusic()
+  const timeUpSound = useTimeUpSound()
   const rankings = teams
     .slice(0, teamCount)
     .map((team, index) => ({ team, score: scores[index], index }))
@@ -67,7 +65,7 @@ export default function FinalPage({
       () => setTimeLeft((current) => {
         if (current <= 1) {
           setTimerStatus('expired')
-          music.stop()
+          timeUpSound.playAlert()
           return 0
         }
         return current - 1
@@ -84,35 +82,24 @@ export default function FinalPage({
     setShowIntro(false)
   }
 
-  const startTimer = () => {
+  const startTimer = async () => {
+    await timeUpSound.unlock()
     if (timeLeft === 0) setTimeLeft(30)
     setTimerStatus('running')
-    if (musicEnabled) music.start()
   }
 
   const pauseTimer = () => {
     setTimerStatus('paused')
-    music.stop()
   }
 
   const resetTimer = () => {
     setTimeLeft(30)
     setTimerStatus('idle')
-    music.stop()
-  }
-
-  const toggleMusic = () => {
-    setMusicEnabled((enabled) => {
-      if (enabled) music.stop()
-      else if (timerStatus === 'running') music.start()
-      return !enabled
-    })
   }
 
   const revealAnswer = () => {
     if (!isExpired) return
     setTimerStatus('paused')
-    music.stop()
     setResult('revealed')
   }
 
@@ -164,11 +151,7 @@ export default function FinalPage({
                 </button>
               )}
               <button onClick={resetTimer} disabled={Boolean(result)}><RotateCcw size={13} /> Đặt lại</button>
-              <button onClick={music.preview}><Volume2 size={13} /> Thử nhạc</button>
-              <button onClick={toggleMusic}>
-                {musicEnabled ? <Volume2 size={13} /> : <VolumeX size={13} />}
-                {musicEnabled ? 'Nhạc bật' : 'Nhạc tắt'}
-              </button>
+              <button onClick={timeUpSound.playAlert}><Volume2 size={13} /> Thử âm báo</button>
             </div>
           </div>
         </section>
