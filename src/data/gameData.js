@@ -1,11 +1,11 @@
 export const letters = ['A', 'B', 'C', 'D']
 
 export const timelineEvents = [
-  'Ra đi tìm đường cứu nước ',
-  'Đọc Luận cương của Lênin ',
-  'Thành lập Đảng Cộng sản Việt Nam ',
-  'Về nước trực tiếp lãnh đạo cách mạng ',
-  'Đọc Tuyên ngôn Độc lập ',
+  { letter: 'A', title: 'Thành lập Đảng Cộng sản Việt Nam', year: 1930 },
+  { letter: 'B', title: 'Ra đi tìm đường cứu nước', year: 1911 },
+  { letter: 'C', title: 'Đọc Luận cương của Lênin', year: 1920 },
+  { letter: 'D', title: 'Đọc Tuyên ngôn Độc lập', year: 1945 },
+  { letter: 'E', title: 'Về nước trực tiếp lãnh đạo cách mạng', year: 1941 },
 ]
 
 export const rounds = [

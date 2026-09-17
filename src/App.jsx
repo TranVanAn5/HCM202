@@ -7,7 +7,14 @@ import HomePage from './pages/HomePage'
 import KnowledgeSlidesPage from './pages/KnowledgeSlidesPage'
 import RulesPage from './pages/RulesPage'
 
-const shuffle = (items) => [...items].sort(() => Math.random() - 0.5)
+const shuffle = (items) => {
+  const shuffled = [...items]
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1))
+    ;[shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]]
+  }
+  return shuffled
+}
 
 export default function App() {
   const [page, setPage] = useState('home')
@@ -67,7 +74,7 @@ export default function App() {
         {page === 'rules' && <RulesPage onStart={startGame} />}
         {page === 'knowledge' && <KnowledgeSlidesPage />}
         {page === 'game' && <GamePage {...sharedProps} gameRounds={gameRounds} roundIndex={roundIndex} questionIndex={questionIndex} answerIndex={answerIndex} isRevealed={isRevealed} onChoose={setAnswerIndex} onNext={advanceGame} />}
-        {page === 'final' && <FinalPage {...sharedProps} timeline={timeline} setTimeline={setTimeline} result={timelineResult} setResult={setTimelineResult} onRestart={startGame} />}
+        {page === 'final' && <FinalPage {...sharedProps} timeline={timeline} result={timelineResult} setResult={setTimelineResult} onRestart={startGame} />}
       </div>
     </div>
   )

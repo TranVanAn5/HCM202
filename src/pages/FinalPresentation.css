@@ -13,7 +13,24 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 9px;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
+}
+
+.final-year-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 9px;
+  margin-bottom: 24px;
+}
+
+.final-year-grid span {
+  border: 1px solid rgba(242, 201, 76, .28);
+  border-radius: 8px;
+  padding: 12px 4px;
+  color: #f2c94c;
+  background: rgba(242, 201, 76, .08);
+  font: 800 13px 'DM Mono', monospace;
+  text-align: center;
 }
 
 .random-event-card {
@@ -111,7 +128,7 @@
 
 .final-answer article {
   display: grid;
-  grid-template-columns: 30px 1fr;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
   gap: 11px;
   align-items: center;
   border-bottom: 1px solid rgba(255,238,200,.1);
@@ -136,6 +153,11 @@
 .final-answer article b {
   color: #fff2db;
   font-size: 11px;
+}
+
+.final-answer article time {
+  color: #f2c94c;
+  font: 800 13px 'DM Mono', monospace;
 }
 
 @keyframes event-card-enter {

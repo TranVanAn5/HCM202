@@ -40,6 +40,7 @@ export default function FinalPage({
     .sort((first, second) => second.score - first.score || first.index - second.index)
   const leader = rankings[0]
   const isExpired = timeLeft === 0
+  const chronologicalEvents = [...timelineEvents].sort((first, second) => first.year - second.year)
   const scoreboardProps = {
     teams,
     setTeams,
@@ -116,8 +117,8 @@ export default function FinalPage({
             <strong>THỬ THÁCH CUỐI CÙNG</strong>
             <div className="intro-divider" />
             <p className="intro-description">
-              Màn hình sẽ trình chiếu năm sự kiện theo thứ tự ngẫu nhiên. Các đội
-              có 30 giây để ghi trình tự đúng vào phiếu đáp án của đội mình.
+              Năm sự kiện A–E được xáo vị trí. Các mốc năm bên dưới được xếp theo
+              thời gian; các đội có 30 giây để ghép sự kiện với năm tương ứng.
             </p>
             <div className="intro-rule"><b>30</b><span>giây cho vòng chung kết</span></div>
             <button className="primary start-round-button" onClick={startFinal}>
@@ -137,7 +138,7 @@ export default function FinalPage({
           <div>
             <p className="eyebrow"><Trophy size={15} /> THỬ THÁCH CUỐI</p>
             <h1>Khôi phục dòng thời gian</h1>
-            <p>Quan sát năm sự kiện ngẫu nhiên và ghi lại trình tự đúng trên phiếu đáp án của đội.</p>
+            <p>Ghép năm sự kiện A–E với các mốc năm theo đúng trình tự thời gian.</p>
           </div>
           <div className="final-timer-controls">
             <CountdownTimer seconds={timeLeft} duration={30} label="CHUNG KẾT" />
@@ -159,13 +160,20 @@ export default function FinalPage({
         {isExpired && <div className="final-time-up">HẾT GIỜ — CÁC ĐỘI DỪNG BÚT</div>}
 
         <section className="timeline-card final-presentation-card">
-        <p className="random-events-label">5 CỘT MỐC ĐANG ĐƯỢC XÁO TRỘN</p>
+        <p className="random-events-label">5 SỰ KIỆN ĐƯỢC XÁO VỊ TRÍ</p>
         <div className="random-event-grid">
-          {timeline.map((event, index) => (
-            <article className="random-event-card" key={event}>
-              <span>{String.fromCharCode(65 + index)}</span>
-              <b>{event}</b>
+          {timeline.map((event) => (
+            <article className="random-event-card" key={event.letter}>
+              <span>{event.letter}</span>
+              <b>{event.title}</b>
             </article>
+          ))}
+        </div>
+
+        <p className="random-events-label">5 MỐC THỜI GIAN THEO THỨ TỰ</p>
+        <div className="final-year-grid" aria-label="Các mốc thời gian">
+          {chronologicalEvents.map((event) => (
+            <span key={event.year}>{event.year}</span>
           ))}
         </div>
 
@@ -184,10 +192,11 @@ export default function FinalPage({
           <div className="final-answer">
             <p>ĐÁP ÁN — TRÌNH TỰ ĐÚNG</p>
             <div>
-              {timelineEvents.map((event, index) => (
-                <article key={event}>
-                  <span>{index + 1}</span>
-                  <b>{event}</b>
+              {chronologicalEvents.map((event) => (
+                <article key={event.letter}>
+                  <span>{event.letter}</span>
+                  <b>{event.title}</b>
+                  <time>{event.year}</time>
                 </article>
               ))}
             </div>
