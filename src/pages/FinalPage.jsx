@@ -28,6 +28,8 @@ export default function FinalPage({
   setTeamCount,
   scores,
   addScore,
+  onUseTiebreaker,
+  onConfirmFinalists,
   onRestart,
 }) {
   const [showIntro, setShowIntro] = useState(true)
@@ -77,6 +79,7 @@ export default function FinalPage({
   }, [showIntro, timeLeft, result, timerStatus])
 
   const startFinal = () => {
+    onConfirmFinalists()
     setTimeLeft(30)
     setTimerStatus('idle')
     setResult(null)
@@ -121,9 +124,14 @@ export default function FinalPage({
               theo thời gian; các đội có 30 giây để ghép sự kiện với năm tương ứng.
             </p>
             <div className="intro-rule"><b>30</b><span>giây cho vòng chung kết</span></div>
-            <button className="primary start-round-button" onClick={startFinal}>
-              <Play size={18} fill="currentColor" /> Bắt đầu chung kết
-            </button>
+            <div className="final-intro-actions">
+              <button className="secondary" onClick={onUseTiebreaker}>
+                <Trophy size={18} /> Câu hỏi phụ
+              </button>
+              <button className="primary start-round-button" onClick={startFinal}>
+                <Play size={18} fill="currentColor" /> Bắt đầu chung kết
+              </button>
+            </div>
           </div>
         </section>
       </main>

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import Nav from './components/Nav'
 import { createGameRounds } from './data/gameData'
-import { getQualification } from './data/qualification'
 import FinalPage from './pages/FinalPage'
 import GamePage from './pages/GamePage'
 import HomePage from './pages/HomePage'
@@ -28,14 +27,13 @@ export default function App() {
   ])
   const [teamCount, setTeamCount] = useState(4)
   const [timelineResult, setTimelineResult] = useState(null)
-  const [qualification, setQualification] = useState(null)
   const [finalistIndices, setFinalistIndices] = useState(null)
 
   const startGame = () => {
     setRoundIndex(0); setQuestionIndex(0); setAnswerIndex(null); setIsRevealed(false)
     setGameRounds(createGameRounds())
     setScores([0, 0, 0, 0, 0, 0]); setTimelineResult(null)
-    setQualification(null); setFinalistIndices(null)
+    setFinalistIndices(null)
     navigateTo('game')
   }
 
@@ -51,14 +49,7 @@ export default function App() {
     } else if (roundIndex + 1 < gameRounds.length) {
       setRoundIndex(roundIndex + 1); setQuestionIndex(0)
     } else {
-      const nextQualification = getQualification(scores, teamCount)
-      if (nextQualification.finalists) {
-        setFinalistIndices(nextQualification.finalists)
-        navigateTo('final')
-      } else {
-        setQualification(nextQualification)
-        navigateTo('tiebreaker')
-      }
+      navigateTo('final')
     }
     setAnswerIndex(null); setIsRevealed(false)
   }
@@ -68,8 +59,16 @@ export default function App() {
   }
 
   const sharedProps = { teams, setTeams, teamCount, setTeamCount, scores, addScore }
+  const selectTopFourByScore = () => {
+    if (finalistIndices) return
+    const finalists = Array.from({ length: teamCount }, (_, index) => index)
+      .sort((first, second) => scores[second] - scores[first] || first - second)
+      .slice(0, Math.min(4, teamCount))
+    setFinalistIndices(finalists)
+  }
+
   const resolveTiebreaker = (winners) => {
-    setFinalistIndices([...qualification.secured, ...winners])
+    setFinalistIndices(winners)
     navigateTo('final')
   }
   return (
@@ -80,8 +79,8 @@ export default function App() {
         {page === 'rules' && <RulesPage onStart={startGame} />}
         {page === 'knowledge' && <KnowledgeSlidesPage />}
         {page === 'game' && <GamePage {...sharedProps} gameRounds={gameRounds} roundIndex={roundIndex} questionIndex={questionIndex} answerIndex={answerIndex} isRevealed={isRevealed} onChoose={setAnswerIndex} onNext={advanceGame} />}
-        {page === 'tiebreaker' && qualification && <TiebreakerPage teams={teams} scores={scores} qualification={qualification} onResolve={resolveTiebreaker} />}
-        {page === 'final' && <FinalPage {...sharedProps} finalistIndices={finalistIndices} result={timelineResult} setResult={setTimelineResult} onRestart={startGame} />}
+        {page === 'tiebreaker' && <TiebreakerPage teams={teams} scores={scores} teamCount={teamCount} onResolve={resolveTiebreaker} />}
+        {page === 'final' && <FinalPage {...sharedProps} finalistIndices={finalistIndices} result={timelineResult} setResult={setTimelineResult} onUseTiebreaker={() => navigateTo('tiebreaker')} onConfirmFinalists={selectTopFourByScore} onRestart={startGame} />}
       </div>
     </div>
   )

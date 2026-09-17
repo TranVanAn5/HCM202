@@ -7,13 +7,14 @@ import './GamePage.css'
 import './TimerControls.css'
 import './TiebreakerPage.css'
 
-export default function TiebreakerPage({ teams, scores, qualification, onResolve }) {
+export default function TiebreakerPage({ teams, scores, teamCount, onResolve }) {
   const [timeLeft, setTimeLeft] = useState(10)
   const [timerStatus, setTimerStatus] = useState('idle')
   const [revealed, setRevealed] = useState(false)
   const [selected, setSelected] = useState([])
   const timeUpSound = useTimeUpSound()
-  const { secured, tied, slots } = qualification
+  const teamIndices = Array.from({ length: teamCount }, (_, index) => index)
+  const finalistCount = Math.min(4, teamCount)
 
   useEffect(() => {
     if (timerStatus !== 'running' || timeLeft <= 0) return undefined
@@ -51,23 +52,18 @@ export default function TiebreakerPage({ teams, scores, qualification, onResolve
   const toggleTeam = (index) => {
     setSelected((current) => {
       if (current.includes(index)) return current.filter((item) => item !== index)
-      return current.length < slots ? [...current, index] : current
+      return current.length < finalistCount ? [...current, index] : current
     })
   }
 
   return (
     <main className="game-page tiebreaker-page">
       <aside className="scoreboard tiebreaker-standings">
-        <div className="score-title"><Trophy size={18} /> <span>RANH GIỚI TOP 4</span></div>
-        <p>{secured.length} đội đã chắc suất. Còn {slots} suất dành cho {tied.length} đội bằng điểm.</p>
-        {secured.map((index) => (
+        <div className="score-title"><Trophy size={18} /> <span>DANH SÁCH ĐỘI</span></div>
+        <p>MC chủ động dùng câu hỏi phụ khi cần phân định top 4.</p>
+        {teamIndices.map((index) => (
           <div className="tiebreaker-standing" key={index}>
-            <span>{teams[index]}</span><b>{scores[index]}</b><small>Đã vào</small>
-          </div>
-        ))}
-        {tied.map((index) => (
-          <div className="tiebreaker-standing is-tied" key={index}>
-            <span>{teams[index]}</span><b>{scores[index]}</b><small>Tranh suất</small>
+            <span>{teams[index]}</span><b>{scores[index]}</b><small>Đang tham gia</small>
           </div>
         ))}
       </aside>
@@ -77,7 +73,7 @@ export default function TiebreakerPage({ teams, scores, qualification, onResolve
           <div>
             <span>CÂU HỎI PHỤ</span>
             <h1>Phân định top 4</h1>
-            <p>Chỉ các đội đang hòa điểm ở ranh giới hạng tư tham gia.</p>
+            <p>MC quyết định các đội tham gia và chọn top 4 sau khi mở đáp án.</p>
           </div>
           <div className="timer-control-panel">
             <CountdownTimer seconds={timeLeft} duration={10} />
@@ -120,10 +116,10 @@ export default function TiebreakerPage({ teams, scores, qualification, onResolve
             <>
               <div className="knowledge"><p>{tiebreakerQuestion.note}</p></div>
               <div className="tiebreaker-selection">
-                <h3>Chọn {slots} đội vào chung kết</h3>
-                <p>MC chọn các đội trả lời đúng nhanh nhất trong nhóm đang hòa điểm.</p>
+                <h3>Chọn {finalistCount} đội vào chung kết</h3>
+                <p>MC chọn các đội đi tiếp dựa trên kết quả câu hỏi phụ.</p>
                 <div className="tiebreaker-team-list">
-                  {tied.map((index) => (
+                  {teamIndices.map((index) => (
                     <button
                       aria-pressed={selected.includes(index)}
                       className={selected.includes(index) ? 'selected' : ''}
@@ -135,7 +131,7 @@ export default function TiebreakerPage({ teams, scores, qualification, onResolve
                     </button>
                   ))}
                 </div>
-                <button className="primary" disabled={selected.length !== slots} onClick={() => onResolve(selected)}>
+                <button className="primary" disabled={selected.length !== finalistCount} onClick={() => onResolve(selected)}>
                   Chốt top 4 <ChevronRight size={17} />
                 </button>
               </div>
