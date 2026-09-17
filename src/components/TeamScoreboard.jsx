@@ -7,10 +7,13 @@ export default function TeamScoreboard({
   setTeamCount,
   scores,
   addScore,
+  teamIndices,
   title = 'BẢNG ĐIỂM',
   increments = [10, 5],
   note = 'MC bấm điểm khi đội trả lời đúng.',
 }) {
+  const visibleIndices = teamIndices ?? Array.from({ length: teamCount }, (_, index) => index)
+
   return (
     <aside className="scoreboard">
       <div className="score-title">
@@ -19,19 +22,17 @@ export default function TeamScoreboard({
       </div>
 
       <div className="team-controls">
-        <button onClick={() => setTeamCount(Math.max(2, teamCount - 1))}>−</button>
-        <span>{teamCount} ĐỘI</span>
-        <button
-          onClick={() => setTeamCount(Math.min(teams.length, teamCount + 1))}
-        >
-          +
-        </button>
+        {!teamIndices && <button onClick={() => setTeamCount(Math.max(2, teamCount - 1))}>−</button>}
+        <span>{visibleIndices.length} ĐỘI</span>
+        {!teamIndices && (
+          <button onClick={() => setTeamCount(Math.min(teams.length, teamCount + 1))}>+</button>
+        )}
       </div>
 
-      {teams.slice(0, teamCount).map((team, index) => (
+      {visibleIndices.map((index) => (
         <div className="team-score" key={index}>
           <input
-            value={team}
+            value={teams[index]}
             aria-label={'Tên đội ' + (index + 1)}
             onChange={(event) => {
               setTeams((items) =>

@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import Nav from './components/Nav'
 import { createGameRounds } from './data/gameData'
+import { getQualification } from './data/qualification'
 import FinalPage from './pages/FinalPage'
 import GamePage from './pages/GamePage'
 import HomePage from './pages/HomePage'
 import KnowledgeSlidesPage from './pages/KnowledgeSlidesPage'
 import RulesPage from './pages/RulesPage'
+import TiebreakerPage from './pages/TiebreakerPage'
 
 export default function App() {
   const [page, setPage] = useState('home')
@@ -26,11 +28,14 @@ export default function App() {
   ])
   const [teamCount, setTeamCount] = useState(4)
   const [timelineResult, setTimelineResult] = useState(null)
+  const [qualification, setQualification] = useState(null)
+  const [finalistIndices, setFinalistIndices] = useState(null)
 
   const startGame = () => {
     setRoundIndex(0); setQuestionIndex(0); setAnswerIndex(null); setIsRevealed(false)
     setGameRounds(createGameRounds())
     setScores([0, 0, 0, 0, 0, 0]); setTimelineResult(null)
+    setQualification(null); setFinalistIndices(null)
     navigateTo('game')
   }
 
@@ -46,7 +51,14 @@ export default function App() {
     } else if (roundIndex + 1 < gameRounds.length) {
       setRoundIndex(roundIndex + 1); setQuestionIndex(0)
     } else {
-      navigateTo('final')
+      const nextQualification = getQualification(scores, teamCount)
+      if (nextQualification.finalists) {
+        setFinalistIndices(nextQualification.finalists)
+        navigateTo('final')
+      } else {
+        setQualification(nextQualification)
+        navigateTo('tiebreaker')
+      }
     }
     setAnswerIndex(null); setIsRevealed(false)
   }
@@ -56,6 +68,10 @@ export default function App() {
   }
 
   const sharedProps = { teams, setTeams, teamCount, setTeamCount, scores, addScore }
+  const resolveTiebreaker = (winners) => {
+    setFinalistIndices([...qualification.secured, ...winners])
+    navigateTo('final')
+  }
   return (
     <div className="app-shell">
       <Nav page={page} onNavigate={navigateTo} onStart={startGame} />
@@ -64,7 +80,8 @@ export default function App() {
         {page === 'rules' && <RulesPage onStart={startGame} />}
         {page === 'knowledge' && <KnowledgeSlidesPage />}
         {page === 'game' && <GamePage {...sharedProps} gameRounds={gameRounds} roundIndex={roundIndex} questionIndex={questionIndex} answerIndex={answerIndex} isRevealed={isRevealed} onChoose={setAnswerIndex} onNext={advanceGame} />}
-        {page === 'final' && <FinalPage {...sharedProps} result={timelineResult} setResult={setTimelineResult} onRestart={startGame} />}
+        {page === 'tiebreaker' && qualification && <TiebreakerPage teams={teams} scores={scores} qualification={qualification} onResolve={resolveTiebreaker} />}
+        {page === 'final' && <FinalPage {...sharedProps} finalistIndices={finalistIndices} result={timelineResult} setResult={setTimelineResult} onRestart={startGame} />}
       </div>
     </div>
   )

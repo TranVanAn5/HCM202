@@ -308,7 +308,7 @@ export default function GamePage({
               <button className="next-btn" onClick={onNext}>
                 {isRevealed
                   ? roundIndex === 4 && questionIndex === round.questions.length - 1
-                    ? 'Đến vòng chung kết'
+                    ? 'Chốt top 4'
                     : 'Hồ sơ tiếp theo'
                   : 'Mở đáp án'}
                 <ChevronRight size={18} />

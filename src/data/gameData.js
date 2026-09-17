@@ -1,5 +1,17 @@
 export const letters = ['A', 'B', 'C', 'D']
 
+export const tiebreakerQuestion = {
+  q: 'Vì sao Nghị quyết Hội nghị Trung ương 8 (5/1941) được xem là sự trở về với quan điểm trong Cương lĩnh chính trị đầu tiên (1930)?',
+  o: [
+    'Đặt giải phóng dân tộc lên hàng đầu và đoàn kết toàn dân',
+    'Ưu tiên cách mạng điền địa trước độc lập dân tộc',
+    'Từ bỏ vai trò lãnh đạo của Đảng',
+    'Chỉ tập trung hoạt động cách mạng ở nước ngoài',
+  ],
+  a: 0,
+  note: 'Hội nghị Trung ương 8 đặt nhiệm vụ giải phóng dân tộc lên hàng đầu, tạm gác khẩu hiệu cách mạng điền địa và phát huy đại đoàn kết dân tộc. Đây là sự trở về với quan điểm của Cương lĩnh chính trị đầu tiên năm 1930.',
+}
+
 export const timelineEvents = [
   { letter: 'A', title: 'Thành lập Đảng Cộng sản Việt Nam', year: 1930 },
   { letter: 'B', title: 'Ra đi tìm đường cứu nước', year: 1911 },

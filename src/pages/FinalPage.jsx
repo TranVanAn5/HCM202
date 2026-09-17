@@ -19,6 +19,7 @@ import './FinalScoreboard.css'
 import './TimerControls.css'
 
 export default function FinalPage({
+  finalistIndices,
   result,
   setResult,
   teams,
@@ -33,9 +34,8 @@ export default function FinalPage({
   const [timeLeft, setTimeLeft] = useState(30)
   const [timerStatus, setTimerStatus] = useState('idle')
   const timeUpSound = useTimeUpSound()
-  const rankings = teams
-    .slice(0, teamCount)
-    .map((team, index) => ({ team, score: scores[index], index }))
+  const rankings = (finalistIndices ?? Array.from({ length: teamCount }, (_, index) => index))
+    .map((index) => ({ team: teams[index], score: scores[index], index }))
     .sort((first, second) => second.score - first.score || first.index - second.index)
   const leader = rankings[0]
   const isExpired = timeLeft === 0
@@ -47,6 +47,7 @@ export default function FinalPage({
     setTeamCount,
     scores,
     addScore,
+    teamIndices: finalistIndices,
     title: 'BẢNG ĐIỂM TỔNG',
     increments: [30, 20, 10, -10],
     note: 'MC cộng +30 / +20 / +10; dùng −10 để sửa nếu bấm nhầm.',

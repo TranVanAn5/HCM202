@@ -1,0 +1,142 @@
+.tiebreaker-page .scoreboard {
+  align-self: start;
+}
+
+.tiebreaker-standings > p {
+  color: #c8d5cf;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.tiebreaker-standing {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 8px;
+  border-top: 1px solid #ffffff18;
+  padding: 10px 0;
+  color: #fff1d8;
+  font-size: 12px;
+}
+
+.tiebreaker-standing span {
+  overflow-wrap: anywhere;
+}
+
+.tiebreaker-standing b {
+  color: #f2c94c;
+}
+
+.tiebreaker-standing small {
+  grid-column: 1 / -1;
+  color: #9ab4a7;
+}
+
+.tiebreaker-standing.is-tied small {
+  color: #f2c94c;
+}
+
+.tiebreaker-question h2 {
+  margin-bottom: 28px;
+}
+
+.tiebreaker-option {
+  display: flex;
+  min-height: 68px;
+  align-items: center;
+  gap: 13px;
+  border: 1px solid #ffffff19;
+  border-radius: 12px;
+  padding: 10px;
+  color: #e3ede8;
+  background: #ffffff07;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tiebreaker-option > b {
+  display: grid;
+  min-width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 8px;
+  color: #e8b447;
+  background: #ffffff10;
+  font: 700 13px 'DM Mono', monospace;
+}
+
+.tiebreaker-option > svg {
+  flex: none;
+  margin-left: auto;
+}
+
+.tiebreaker-option.correct {
+  border-color: #7bddaa;
+  background: #31816155;
+}
+
+.tiebreaker-question .next-btn:disabled,
+.tiebreaker-selection .primary:disabled {
+  cursor: not-allowed;
+  opacity: .4;
+}
+
+.tiebreaker-selection {
+  margin-top: 25px;
+  border-top: 1px solid #ffffff20;
+  padding-top: 20px;
+  text-align: left;
+}
+
+.tiebreaker-selection h3 {
+  margin: 0 0 5px;
+  color: #fff1d8;
+  font-size: 16px;
+}
+
+.tiebreaker-selection p {
+  margin: 0 0 14px;
+  color: #a9bdb2;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.tiebreaker-team-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tiebreaker-team-list button {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid #ffffff24;
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: #fff1d8;
+  background: #ffffff0b;
+  cursor: pointer;
+  font: 700 12px 'Plus Jakarta Sans', sans-serif;
+  text-align: left;
+}
+
+.tiebreaker-team-list button.selected {
+  border-color: #f2c94c;
+  color: #f2c94c;
+  background: #f2c94c20;
+}
+
+@media (max-width: 850px) {
+  .tiebreaker-page .scoreboard {
+    display: block;
+  }
+}
+
+@media (max-width: 560px) {
+  .tiebreaker-team-list {
+    grid-template-columns: 1fr;
+  }
+}
