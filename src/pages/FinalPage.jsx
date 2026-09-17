@@ -19,7 +19,6 @@ import './FinalScoreboard.css'
 import './TimerControls.css'
 
 export default function FinalPage({
-  timeline,
   result,
   setResult,
   teams,
@@ -117,8 +116,8 @@ export default function FinalPage({
             <strong>THỬ THÁCH CUỐI CÙNG</strong>
             <div className="intro-divider" />
             <p className="intro-description">
-              Năm sự kiện A–E được xáo vị trí. Các mốc năm bên dưới được xếp theo
-              thời gian; các đội có 30 giây để ghép sự kiện với năm tương ứng.
+              Năm sự kiện được liệt kê từ A đến E. Các mốc năm bên dưới được xếp
+              theo thời gian; các đội có 30 giây để ghép sự kiện với năm tương ứng.
             </p>
             <div className="intro-rule"><b>30</b><span>giây cho vòng chung kết</span></div>
             <button className="primary start-round-button" onClick={startFinal}>
@@ -160,9 +159,9 @@ export default function FinalPage({
         {isExpired && <div className="final-time-up">HẾT GIỜ — CÁC ĐỘI DỪNG BÚT</div>}
 
         <section className="timeline-card final-presentation-card">
-        <p className="random-events-label">5 SỰ KIỆN ĐƯỢC XÁO VỊ TRÍ</p>
+        <p className="random-events-label">5 SỰ KIỆN THEO THỨ TỰ A–E</p>
         <div className="random-event-grid">
-          {timeline.map((event) => (
+          {timelineEvents.map((event) => (
             <article className="random-event-card" key={event.letter}>
               <span>{event.letter}</span>
               <b>{event.title}</b>

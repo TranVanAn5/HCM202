@@ -1,20 +1,11 @@
 import { useState } from 'react'
 import Nav from './components/Nav'
-import { createGameRounds, timelineEvents } from './data/gameData'
+import { createGameRounds } from './data/gameData'
 import FinalPage from './pages/FinalPage'
 import GamePage from './pages/GamePage'
 import HomePage from './pages/HomePage'
 import KnowledgeSlidesPage from './pages/KnowledgeSlidesPage'
 import RulesPage from './pages/RulesPage'
-
-const shuffle = (items) => {
-  const shuffled = [...items]
-  for (let index = shuffled.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(Math.random() * (index + 1))
-    ;[shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]]
-  }
-  return shuffled
-}
 
 export default function App() {
   const [page, setPage] = useState('home')
@@ -34,13 +25,12 @@ export default function App() {
     'Tiên Phong',
   ])
   const [teamCount, setTeamCount] = useState(4)
-  const [timeline, setTimeline] = useState(shuffle(timelineEvents))
   const [timelineResult, setTimelineResult] = useState(null)
 
   const startGame = () => {
     setRoundIndex(0); setQuestionIndex(0); setAnswerIndex(null); setIsRevealed(false)
     setGameRounds(createGameRounds())
-    setScores([0, 0, 0, 0, 0, 0]); setTimeline(shuffle(timelineEvents)); setTimelineResult(null)
+    setScores([0, 0, 0, 0, 0, 0]); setTimelineResult(null)
     navigateTo('game')
   }
 
@@ -74,7 +64,7 @@ export default function App() {
         {page === 'rules' && <RulesPage onStart={startGame} />}
         {page === 'knowledge' && <KnowledgeSlidesPage />}
         {page === 'game' && <GamePage {...sharedProps} gameRounds={gameRounds} roundIndex={roundIndex} questionIndex={questionIndex} answerIndex={answerIndex} isRevealed={isRevealed} onChoose={setAnswerIndex} onNext={advanceGame} />}
-        {page === 'final' && <FinalPage {...sharedProps} timeline={timeline} result={timelineResult} setResult={setTimelineResult} onRestart={startGame} />}
+        {page === 'final' && <FinalPage {...sharedProps} result={timelineResult} setResult={setTimelineResult} onRestart={startGame} />}
       </div>
     </div>
   )
